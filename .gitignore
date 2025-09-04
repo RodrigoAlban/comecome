@@ -1,0 +1,73 @@
+# Arquivos objeto e binários
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+comecome
+
+# Arquivos de backup e temporários
+*~
+*.bak
+*.tmp
+*.swp
+*.swo
+*.orig
+
+# Arquivos de configuração do editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de log
+*.log
+
+# Arquivos gerados pelo projeto
+highscore.txt
+
+# Arquivos de build
+build/
+dist/
+bin/
+
+# Arquivos de dependências (se usar algum gerenciador)
+node_modules/
+*.deb
+*.rpm
+
+# Arquivos de documentação gerados
+*.pdf
+*.html
+*.dvi
+
+# Arquivos de teste
+test_*
+*_test.c
+
+# Arquivos de configuração específicos
+.config/
+.cache/
+
+# Arquivos de backup do Vim
+*.un~
+Session.vim
+
+# Arquivos de cobertura de código
+*.gcno
+*.gcda
+*.gcov
+
+# Arquivos de profiling
+*.prof
+*.lprof
+
+# Arquivos de debug
+*.dSYM/
+debug/
+*.core
