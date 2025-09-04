@@ -30,6 +30,13 @@ char desenhopilula[4][7] = {
 	{"      "}
 };
 
+char desenhocherry[4][7] = {
+	{"      "},
+	{" .-.  "},
+	{"(   ) "},
+	{" '-'  "}
+};
+
 char desenhovazio[4][7] = {
 	{"      "},
 	{"      "},
@@ -56,6 +63,9 @@ void imprimemapa(MAPA* m) {
 						break;
 					case PILULA:
 						imprimeparte(desenhopilula, parte);
+						break;
+					case CHERRY:
+						imprimeparte(desenhocherry, parte);
 						break;
 					case PAREDE_VERTICAL:
 					case PAREDE_HORIZONTAL:

@@ -7,6 +7,7 @@
 #define PAREDE_VERTICAL '|'
 #define PAREDE_HORIZONTAL '-'
 #define PILULA 'P'
+#define CHERRY 'C'
 
 struct mapa {
     char** matriz;
@@ -36,5 +37,7 @@ int encontramapa(MAPA* m, POSICAO* p, char c);
 int podeandar(MAPA* m, char personagem, int x, int y);
 int ehparede(MAPA* m, int x, int y);
 int ehpersonagem(MAPA* m, char personagem, int x, int y);
+
+int contapersonagem(MAPA* m, char c);
 
 #endif

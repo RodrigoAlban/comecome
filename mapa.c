@@ -18,7 +18,7 @@ int ehpersonagem(MAPA* m, char personagem, int x, int y){
 int podeandar(MAPA* m, char personagem, int x, int y){
     return 
         ehvalida(m, x, y) &&
-        !ehparede(m, x, y);
+        !ehparede(m, x, y) &&
         !ehpersonagem(m, personagem, x, y);
 }
 
@@ -74,6 +74,16 @@ void alocamapa(MAPA* m) {
     for (int i = 0; i < m->linhas; i++) {
         m->matriz[i] = malloc(sizeof(char) * m->colunas + 1);
     }
+}
+
+int contapersonagem(MAPA* m, char c) {
+    int count = 0;
+    for(int i = 0; i < m->linhas; i++) {
+        for(int j = 0; j < m->colunas; j++) {
+            if(m->matriz[i][j] == c) count++;
+        }
+    }
+    return count;
 }
 
 void lemapa(MAPA* m) {

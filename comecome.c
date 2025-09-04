@@ -6,8 +6,12 @@
 
 MAPA m;
 POSICAO heroi;
-
+POSICAO initial_heroi;
 int tempilula = 0;
+int score = 0;
+int lives = 3;
+int pills_left;
+int highscore = 0;
 
 int praondefantasmavai (int xatual, int yatual, int* xdestino, int* ydestino){
 
@@ -18,15 +22,21 @@ int praondefantasmavai (int xatual, int yatual, int* xdestino, int* ydestino){
         {xatual-1, yatual}
     };
 
-    srand(time(0));
-    for(int i; i <10; i++){
-        int posicao = rand() % 4;
-
-        if(podeandar(&m, FANTASMA, opcoes[posicao][0], opcoes[posicao][1])){
-            *xdestino = opcoes[posicao][0];
-            *ydestino = opcoes[posicao][1];
-            return 1;
+    int best_dist = 999;
+    int best_i = -1;
+    for(int i = 0; i < 4; i++){
+        if(podeandar(&m, FANTASMA, opcoes[i][0], opcoes[i][1])){
+            int dist = abs(opcoes[i][0] - heroi.x) + abs(opcoes[i][1] - heroi.y);
+            if(dist < best_dist){
+                best_dist = dist;
+                best_i = i;
+            }
         }
+    }
+    if(best_i != -1){
+        *xdestino = opcoes[best_i][0];
+        *ydestino = opcoes[best_i][1];
+        return 1;
     }
     return 0;
 }
@@ -86,8 +96,31 @@ void move(char direcao){
     }
     if(!podeandar(&m, HEROI, proximox, proximoy))
         return;
+    
+    if(ehpersonagem(&m, FANTASMA, proximox, proximoy)){
+        if(!tempilula){
+            lives--;
+            if(lives > 0){
+                // Limpa a posição anterior do herói
+                m.matriz[heroi.x][heroi.y] = VAZIO;
+                heroi = initial_heroi;
+                m.matriz[heroi.x][heroi.y] = HEROI;
+            }
+            return;
+        } else {
+            score += 100;
+        }
+    }
+
     if(ehpersonagem(&m, PILULA, proximox, proximoy)){
         tempilula = 1;
+        m.matriz[proximox][proximoy] = VAZIO;
+        score += 10;
+        pills_left--;
+    }
+    if(ehpersonagem(&m, CHERRY, proximox, proximoy)){
+        m.matriz[proximox][proximoy] = VAZIO;
+        score += 50;
     }
     
     andanomapa(&m, heroi.x, heroi.y, proximox, proximoy);
@@ -98,7 +131,7 @@ void move(char direcao){
 int acabou() {
     POSICAO pos;
 
-    int perdeu = !encontramapa(&m, &pos, HEROI);
+    int perdeu = (lives <= 0) || !encontramapa(&m, &pos, HEROI);
     int ganhou = !encontramapa(&m, &pos, FANTASMA);
 
     return ganhou || perdeu;
@@ -125,26 +158,58 @@ void explodepilula2(int x, int y, int somax, int somay, int qtd) {
     if(!ehvalida(&m, novox, novoy)) return;
     if(ehparede(&m, novox, novoy)) return;
 
+    if(m.matriz[novox][novoy] == FANTASMA) score += 100;
     m.matriz[novox][novoy] = VAZIO;
     explodepilula2(novox, novoy, somax, somay, qtd-1);
 }
 
 int main() {
 
+    srand(time(NULL));
+    FILE* f = fopen("highscore.txt", "r");
+    if(f){
+        fscanf(f, "%d", &highscore);
+        fclose(f);
+    }
     lemapa(&m);
     encontramapa(&m, &heroi, HEROI);
+    initial_heroi = heroi;
+    pills_left = contapersonagem(&m, PILULA);
 
+    printf("Bem-vindo ao ComeCome!\n");
+    printf("Use w,a,s,d para mover, b para bomba quando tiver a pílula.\n");
+    printf("Colete todas as pílulas ou elimine todos os fantasmas para vencer!\n");
+
+    POSICAO pos;
     do{
-        printf("Tem pilula: %s\n", (tempilula ? "SIM" : "NAO"));
+        printf("Pontuação: %d (Recorde: %d) Vidas: %d Pílulas restantes: %d Tem pílula: %s\n", score, highscore, lives, pills_left, (tempilula ? "SIM" : "NÃO"));
         imprimemapa(&m);
 
         char comando;
         scanf(" %c", &comando);
         move(comando);
-        if(comando == BOMBA) explodepilula(heroi.x, heroi.y, 3);
+        if(comando == BOMBA) explodepilula();
         fantasmas();
 
     } while(!acabou());
+
+    int perdeu = (lives <= 0);
+    int ganhou = !encontramapa(&m, &pos, FANTASMA);
+
+    if(perdeu){
+        printf("Fim de Jogo! Pontuação Final: %d\n", score);
+    } else if(ganhou){
+        printf("Você Venceu! Pontuação: %d\n", score);
+    }
+
+    if(score > highscore){
+        highscore = score;
+        FILE* f = fopen("highscore.txt", "w");
+        if(f){
+            fprintf(f, "%d", highscore);
+            fclose(f);
+        }
+    }
 
     liberamapa(&m);
 
